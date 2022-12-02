@@ -32,7 +32,6 @@ int color;
 Scene* Connect4::createScene(int x)
 {
     color = x;
-    log("COLOR:%d",color);
     return Connect4::create();
 }
 
@@ -183,6 +182,40 @@ bool Connect4::init()
     trn->setPosition(Vec2(600, 650));
     this->addChild(trn, 2);
 
+    auto item0 = MenuItemImage::create("blank.png", "blank.png",
+        CC_CALLBACK_1(Connect4::play0, this));
+    auto item1 = MenuItemImage::create("blank.png", "blank.png",
+        CC_CALLBACK_1(Connect4::play1, this));
+    auto item2 = MenuItemImage::create("blank.png", "blank.png",
+        CC_CALLBACK_1(Connect4::play2, this));
+    auto item3 = MenuItemImage::create("blank.png", "blank.png",
+        CC_CALLBACK_1(Connect4::play3, this));
+    auto item4 = MenuItemImage::create("blank.png", "blank.png",
+        CC_CALLBACK_1(Connect4::play4, this));
+    auto item5 = MenuItemImage::create("blank.png", "blank.png",
+        CC_CALLBACK_1(Connect4::play5, this));
+    auto item6 = MenuItemImage::create("blank.png", "blank.png",
+        CC_CALLBACK_1(Connect4::play6, this));
+    
+    item0->setPosition(Vec2(50, 350));
+    item1->setPosition(Vec2(150, 350));
+    item2->setPosition(Vec2(250, 350));
+    item3->setPosition(Vec2(350, 350));
+    item4->setPosition(Vec2(450, 350));
+    item5->setPosition(Vec2(550, 350));
+    item6->setPosition(Vec2(650, 350));
+
+    Vector<MenuItem*> MenuItems;
+    MenuItems.pushBack(item0);
+    MenuItems.pushBack(item1);
+    MenuItems.pushBack(item2);
+    MenuItems.pushBack(item3);
+    MenuItems.pushBack(item4);
+    MenuItems.pushBack(item5);
+    MenuItems.pushBack(item6);
+    auto menu = Menu::createWithArray(MenuItems);
+    menu->setPosition(Vec2(0, 0));
+    this->addChild(menu, 5);
     //auto p1 = Sprite::create("player1" + ("_cs" + std::to_string(color)) + ".png");
     //p1->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
     //this->addChild(p1, 1);
