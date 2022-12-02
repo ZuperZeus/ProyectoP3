@@ -22,33 +22,37 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "HelloWorldScene.h"
-#include "Board.h"
 #include "Connect4Scene.h"
-
+#include "Board.h"
+#include <windows.h>
+#include <mmsystem.h>
+#include "HelloWorldScene.h"
 USING_NS_CC;
-Scene* HelloWorld::createScene()
+int color;
+Scene* Connect4::createScene(int x)
 {
-    return HelloWorld::create();
+    color = x;
+    log("COLOR:%d",color);
+    return Connect4::create();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
     printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
-}/*
-void HelloWorld::placePiece(int p, int x, int y)
+    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in Connect4Scene.cpp\n");
+}
+void Connect4::placePiece(int p, int x, int y)
 {
-    auto play = Sprite::create("player2.png");
+    auto play = Sprite::create("player2" + ("_cs" + std::to_string(color)) + ".png");
     if (p == 1)
     {
-        play = Sprite::create("player1.png");
+        play = Sprite::create("player1" + ("_cs" + std::to_string(color)) + ".png");
     }
     play->setPosition(Vec2(100 * x + 50, 100 * (5-y) + 50));
     this->addChild(play, 1);
 }
-void HelloWorld::showWin()
+void Connect4::showWin()
 {
     std::vector< std::vector<int> > win = board.getWin();
     for (int i = 0; i < win[0].size(); i++)
@@ -58,7 +62,7 @@ void HelloWorld::showWin()
         this->addChild(piece, 1);
     }
 }
-void HelloWorld::play(int x)
+void Connect4::play(int x)
 {
     if (board.canDrop(x))
     {
@@ -84,7 +88,7 @@ void HelloWorld::play(int x)
         if(win!=0&&gameRunning)
         {
             PlaySound(TEXT("winsound.wav"), NULL, SND_FILENAME | SND_ASYNC);
-            auto ovw = Sprite::create("board.png");
+            auto ovw = Sprite::create("board" + ("_cs" + std::to_string(color)) + ".png");
             ovw->setPosition(Vec2(350, 300));
             this->addChild(ovw, 1);
             showWin();
@@ -102,6 +106,7 @@ void HelloWorld::play(int x)
             }
             gameRunning = false;
         }
+        
     }/*
     std::vector<int> test;
     int col;
@@ -115,23 +120,29 @@ void HelloWorld::play(int x)
     if (col <= 5)
         turn = 3 - turn;
     placePiece(turn, x, col);
-    
+    */
     //if (getNumAt(x, 0) == 0) placePiece(turn, x, 0);
     //else if (getNumAt(x, 1) == 1) placePiece(turn, x, 1);
 
        
 }
-void HelloWorld::updateSel()
+void Connect4::updateSel()
 {
-    auto ovw = Sprite::create("board.png");
+    auto ovw = Sprite::create("board" + ("_cs" + std::to_string(color)) + ".png");
+    //auto ovw = Sprite::create("board_cs3.png");
     ovw->setPosition(Vec2(350,300));
     this->addChild(ovw, 1);
-    auto selec = Sprite::create("sel.png");
+    auto selec = Sprite::create("sel" + ("_cs" + std::to_string(color)) + ".png");
     selec->setPosition(Vec2(100*currsel+50,300));
     this->addChild(selec, 1);
 }
-void HelloWorld::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
+void Connect4::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
+    if (gameRunning == false)
+    {
+        Scene* tempScene = HelloWorld::createScene();
+        Director::getInstance()->replaceScene(tempScene);
+    }
     if (board.checkWin() == 0)
     {
         if (keyCode == EventKeyboard::KeyCode::KEY_A || keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW)currsel += 6;
@@ -140,32 +151,9 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
         updateSel();
         if (keyCode == EventKeyboard::KeyCode::KEY_ENTER) play(currsel);
     }
-}*/
-void HelloWorld::openGame1(Ref* pSender)
-{
-    Scene* tempScene = Connect4::createScene(0);
-    Director::getInstance()->replaceScene(tempScene);
-}
-void HelloWorld::openGame2(Ref* pSender)
-{
-    Scene* tempScene = Connect4::createScene(1);
-    Director::getInstance()->replaceScene(tempScene);
-
-}
-void HelloWorld::openGame3(Ref* pSender)
-{
-    Scene* tempScene = Connect4::createScene(2);
-    Director::getInstance()->replaceScene(tempScene);
-
-}
-void HelloWorld::openGame4(Ref* pSender)
-{
-    Scene* tempScene = Connect4::createScene(3);
-    Director::getInstance()->replaceScene(tempScene);
-
 }
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool Connect4::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -178,40 +166,14 @@ bool HelloWorld::init()
    
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    auto item0 = MenuItemImage::create("color_cs0.png", "color_cs0.png",
-        CC_CALLBACK_1(HelloWorld::openGame1, this));
-    auto item1 = MenuItemImage::create("color_cs1.png", "color_cs1.png",
-        CC_CALLBACK_1(HelloWorld::openGame2, this));
-    auto item2 = MenuItemImage::create("color_cs2.png", "color_cs2.png",
-        CC_CALLBACK_1(HelloWorld::openGame3, this));
-    auto item3 = MenuItemImage::create("color_cs3.png", "color_cs3.png",
-        CC_CALLBACK_1(HelloWorld::openGame4, this));
-    item0->setPosition(Vec2(175, 450));
-    item1->setPosition(Vec2(350+175, 450));
-    item2->setPosition(Vec2(175, 250));
-    item3->setPosition(Vec2(350+175, 250));
-
-    Vector<MenuItem*> MenuItems;
-    MenuItems.pushBack(item0);
-    MenuItems.pushBack(item1);
-    MenuItems.pushBack(item2);
-    MenuItems.pushBack(item3);
-    auto menu = Menu::createWithArray(MenuItems);
-    menu->setPosition(Vec2(0, 0));
-    this->addChild(menu, 1);
-
-    /*for (int i = 0; i < 7; i++)
-    {
-        updateSel();
-        currsel++;
-    }
     //placePiece(1, 3, 4);
     //placePiece(2, 0, 0);
     //placePiece(2, 6, 5);
+    updateSel();
     EventKeyboard::KeyCode;
     auto listener = EventListenerKeyboard::create();
-        //CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
-    listener->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
+        //CC_CALLBACK_2(Connect4::onKeyPressed, this);
+    listener->onKeyPressed = CC_CALLBACK_2(Connect4::onKeyPressed, this);
    
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     auto score = Label::createWithTTF((std::string)("Score: " + std::to_string(scoreint)), "fonts/Marker Felt.ttf", 50);
@@ -220,8 +182,8 @@ bool HelloWorld::init()
     auto trn = Label::createWithTTF((std::string)("Player " + std::to_string(3-turn)), "fonts/Marker Felt.ttf", 50);
     trn->setPosition(Vec2(600, 650));
     this->addChild(trn, 2);
-    */
-    //auto p1 = Sprite::create("player1.png");
+
+    //auto p1 = Sprite::create("player1" + ("_cs" + std::to_string(color)) + ".png");
     //p1->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
     //this->addChild(p1, 1);
     //auto p2 = Sprite::create("player2.png");
@@ -233,7 +195,7 @@ bool HelloWorld::init()
     auto closeItem = MenuItemImage::create(
                                            "CloseNormal.png",
                                            "CloseSelected.png",
-                                           CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+                                           CC_CALLBACK_1(Connect4::menuCloseCallback, this));
 
     if (closeItem == nullptr ||
         closeItem->getContentSize().width <= 0 ||
@@ -262,7 +224,7 @@ bool HelloWorld::init()
     
 
 
-    // add "HelloWorld" splash screen"
+    // add "Connect4" splash screen"
     auto sprite = Sprite::create("board.png");
     if (sprite == nullptr)
     {
@@ -280,7 +242,7 @@ bool HelloWorld::init()
             // add the label as a child to this layer
             this->addChild(label, 1);
         }
-        problemLoading("'HelloWorld.png'");
+        problemLoading("'Connect4.png'");
     }
     else
     {
@@ -308,12 +270,13 @@ bool HelloWorld::init()
 }
 
 
-void HelloWorld::menuCloseCallback(Ref* pSender)
+void Connect4::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->end();
 
-    
+    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
+
     //EventCustom customEndEvent("game_scene_close_event");
     //_eventDispatcher->dispatchEvent(&customEndEvent);
 

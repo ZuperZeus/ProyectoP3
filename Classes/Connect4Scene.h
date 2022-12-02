@@ -22,27 +22,31 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+#ifndef __Connect4_SCENE_H__
+#define __Connect4_SCENE_H__
 
 #include "cocos2d.h"
 #include "Board.h"
-#include "Connect4Scene.h"
 USING_NS_CC;
-class HelloWorld : public cocos2d::Scene
+class Connect4 : public cocos2d::Scene
 {
 public:
-    static cocos2d::Scene* createScene();
-
+    static cocos2d::Scene* createScene(int x);
     virtual bool init();
+    int turn=2;
+    int scoreint = 0;
+    Board board;
     // a selector callback
-    void openGame1(Ref * pSender);
-    void openGame2(Ref* pSender);
-    void openGame3(Ref* pSender);
-    void openGame4(Ref* pSender);
-    void menuCloseCallback(Ref* pSender);
+    void menuCloseCallback(cocos2d::Ref* pSender);
+    void placePiece(int p, int x, int y);
+    void onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event);
+    bool gameRunning = true;
+    void play(int x);
+    void showWin();
+    int currsel=3;
+    void updateSel();
     // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
+    CREATE_FUNC(Connect4);
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif // __Connect4_SCENE_H__
