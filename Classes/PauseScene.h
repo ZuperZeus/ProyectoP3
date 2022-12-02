@@ -22,39 +22,25 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __Connect4_SCENE_H__
-#define __Connect4_SCENE_H__
+#ifndef __Pause_SCENE_H__
+#define __Pause_SCENE_H__
 
 #include "cocos2d.h"
 #include "Board.h"
+#include "Connect4Scene.h"
 USING_NS_CC;
-class Connect4 : public cocos2d::Scene
+class Pause : public cocos2d::Scene
 {
 public:
-    static cocos2d::Scene* createScene(int x);
+    static cocos2d::Scene* createScene(Scene * pausedScene);
+
     virtual bool init();
-    int turn=2;
-    int scoreint = 0;
-    Board board;
     // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-    void pauseScene(Ref* pSender);
-    void placePiece(int p, int x, int y);
-    void onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event);
-    bool gameRunning = true;
-    void play(int x);
-    void play0(Ref* pSender) { if (gameRunning) { currsel = 0; updateSel(); play(0); } };
-    void play1(Ref* pSender) { if (gameRunning) { currsel = 1; updateSel(); play(1); } };
-    void play2(Ref* pSender) { if (gameRunning) { currsel = 2; updateSel(); play(2); } };
-    void play3(Ref* pSender) { if (gameRunning) { currsel = 3; updateSel(); play(3); } };
-    void play4(Ref* pSender) { if (gameRunning) { currsel = 4; updateSel(); play(4); } };
-    void play5(Ref* pSender) { if (gameRunning) { currsel = 5; updateSel(); play(5); } };
-    void play6(Ref* pSender) { if (gameRunning) { currsel = 6; updateSel(); play(6); } };
-    void showWin();
-    int currsel=3;
-    void updateSel();
+    void exittomenu(Ref* pSender);
+    void rettoscene(Ref* pSender);
+    void menuCloseCallback(Ref* pSender);
     // implement the "static create()" method manually
-    CREATE_FUNC(Connect4);
+    CREATE_FUNC(Pause);
 };
 
-#endif // __Connect4_SCENE_H__
+#endif // __Pause_SCENE_H__

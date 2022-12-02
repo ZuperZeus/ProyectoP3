@@ -22,37 +22,36 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "Connect4Scene.h"
-#include "Board.h"
-#include <windows.h>
-#include <mmsystem.h>
-#include "HelloWorldScene.h"
 #include "PauseScene.h"
+#include "HelloWorldScene.h"
+#include "Board.h"
+#include "Connect4Scene.h"
+
 USING_NS_CC;
-int color;
-Scene* Connect4::createScene(int x)
+Scene* psdScene;
+Scene* Pause::createScene(Scene* pausedScene)
 {
-    color = x;
-    return Connect4::create();
+    psdScene = pausedScene;
+    return Pause::create();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
     printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in Connect4Scene.cpp\n");
-}
-void Connect4::placePiece(int p, int x, int y)
+    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in PauseScene.cpp\n");
+}/*
+void Pause::placePiece(int p, int x, int y)
 {
-    auto play = Sprite::create("player2" + ("_cs" + std::to_string(color)) + ".png");
+    auto play = Sprite::create("player2.png");
     if (p == 1)
     {
-        play = Sprite::create("player1" + ("_cs" + std::to_string(color)) + ".png");
+        play = Sprite::create("player1.png");
     }
     play->setPosition(Vec2(100 * x + 50, 100 * (5-y) + 50));
     this->addChild(play, 1);
 }
-void Connect4::showWin()
+void Pause::showWin()
 {
     std::vector< std::vector<int> > win = board.getWin();
     for (int i = 0; i < win[0].size(); i++)
@@ -62,7 +61,7 @@ void Connect4::showWin()
         this->addChild(piece, 1);
     }
 }
-void Connect4::play(int x)
+void Pause::play(int x)
 {
     if (board.canDrop(x))
     {
@@ -88,7 +87,7 @@ void Connect4::play(int x)
         if(win!=0&&gameRunning)
         {
             PlaySound(TEXT("winsound.wav"), NULL, SND_FILENAME | SND_ASYNC);
-            auto ovw = Sprite::create("board" + ("_cs" + std::to_string(color)) + ".png");
+            auto ovw = Sprite::create("board.png");
             ovw->setPosition(Vec2(350, 300));
             this->addChild(ovw, 1);
             showWin();
@@ -106,7 +105,6 @@ void Connect4::play(int x)
             }
             gameRunning = false;
         }
-        
     }/*
     std::vector<int> test;
     int col;
@@ -120,29 +118,23 @@ void Connect4::play(int x)
     if (col <= 5)
         turn = 3 - turn;
     placePiece(turn, x, col);
-    */
+    
     //if (getNumAt(x, 0) == 0) placePiece(turn, x, 0);
     //else if (getNumAt(x, 1) == 1) placePiece(turn, x, 1);
 
        
 }
-void Connect4::updateSel()
+void Pause::updateSel()
 {
-    auto ovw = Sprite::create("board" + ("_cs" + std::to_string(color)) + ".png");
-    //auto ovw = Sprite::create("board_cs3.png");
+    auto ovw = Sprite::create("board.png");
     ovw->setPosition(Vec2(350,300));
     this->addChild(ovw, 1);
-    auto selec = Sprite::create("sel" + ("_cs" + std::to_string(color)) + ".png");
+    auto selec = Sprite::create("sel.png");
     selec->setPosition(Vec2(100*currsel+50,300));
     this->addChild(selec, 1);
 }
-void Connect4::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
+void Pause::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
-    if (gameRunning == false)
-    {
-        Scene* tempScene = HelloWorld::createScene();
-        Director::getInstance()->replaceScene(tempScene);
-    }
     if (board.checkWin() == 0)
     {
         if (keyCode == EventKeyboard::KeyCode::KEY_A || keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW)currsel += 6;
@@ -151,14 +143,18 @@ void Connect4::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
         updateSel();
         if (keyCode == EventKeyboard::KeyCode::KEY_ENTER) play(currsel);
     }
-}
-void Connect4::pauseScene(Ref* pSender)
+}*/
+void Pause::exittomenu(Ref* pSender)
 {
-    Scene* tempScene = Pause::createScene(this);
+    Scene* tempScene = HelloWorld::createScene();
     Director::getInstance()->replaceScene(tempScene);
 }
+void Pause::rettoscene(Ref* pSender)
+{
+    Director::getInstance()->end();
+}
 // on "init" you need to initialize your instance
-bool Connect4::init()
+bool Pause::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -171,14 +167,32 @@ bool Connect4::init()
    
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    auto item0 = MenuItemImage::create("pause_exit.png", "pause_exit.png",
+        CC_CALLBACK_1(Pause::exittomenu, this));
+    auto item1 = MenuItemImage::create("pause_leave.png", "pause_leave.png",
+            CC_CALLBACK_1(Pause::rettoscene, this));
+    item0->setPosition(Vec2(350, 350 + 175));
+    item1->setPosition(Vec2(350, 350 - 175));
+    
+    Vector<MenuItem*> MenuItems;
+    MenuItems.pushBack(item0);
+    MenuItems.pushBack(item1);
+    auto menu = Menu::createWithArray(MenuItems);
+    menu->setPosition(Vec2(0, 0));
+    this->addChild(menu, 1);
+
+    /*for (int i = 0; i < 7; i++)
+    {
+        updateSel();
+        currsel++;
+    }
     //placePiece(1, 3, 4);
     //placePiece(2, 0, 0);
     //placePiece(2, 6, 5);
-    updateSel();
     EventKeyboard::KeyCode;
     auto listener = EventListenerKeyboard::create();
-        //CC_CALLBACK_2(Connect4::onKeyPressed, this);
-    listener->onKeyPressed = CC_CALLBACK_2(Connect4::onKeyPressed, this);
+        //CC_CALLBACK_2(Pause::onKeyPressed, this);
+    listener->onKeyPressed = CC_CALLBACK_2(Pause::onKeyPressed, this);
    
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     auto score = Label::createWithTTF((std::string)("Score: " + std::to_string(scoreint)), "fonts/Marker Felt.ttf", 50);
@@ -187,50 +201,8 @@ bool Connect4::init()
     auto trn = Label::createWithTTF((std::string)("Player " + std::to_string(3-turn)), "fonts/Marker Felt.ttf", 50);
     trn->setPosition(Vec2(600, 650));
     this->addChild(trn, 2);
-
-    auto item0 = MenuItemImage::create("blank.png", "blank.png",
-        CC_CALLBACK_1(Connect4::play0, this));
-    auto item1 = MenuItemImage::create("blank.png", "blank.png",
-        CC_CALLBACK_1(Connect4::play1, this));
-    auto item2 = MenuItemImage::create("blank.png", "blank.png",
-        CC_CALLBACK_1(Connect4::play2, this));
-    auto item3 = MenuItemImage::create("blank.png", "blank.png",
-        CC_CALLBACK_1(Connect4::play3, this));
-    auto item4 = MenuItemImage::create("blank.png", "blank.png",
-        CC_CALLBACK_1(Connect4::play4, this));
-    auto item5 = MenuItemImage::create("blank.png", "blank.png",
-        CC_CALLBACK_1(Connect4::play5, this));
-    auto item6 = MenuItemImage::create("blank.png", "blank.png",
-        CC_CALLBACK_1(Connect4::play6, this));
-    
-    item0->setPosition(Vec2(50, 350));
-    item1->setPosition(Vec2(150, 350));
-    item2->setPosition(Vec2(250, 350));
-    item3->setPosition(Vec2(350, 350));
-    item4->setPosition(Vec2(450, 350));
-    item5->setPosition(Vec2(550, 350));
-    item6->setPosition(Vec2(650, 350));
-
-    Vector<MenuItem*> MenuItems;
-    MenuItems.pushBack(item0);
-    MenuItems.pushBack(item1);
-    MenuItems.pushBack(item2);
-    MenuItems.pushBack(item3);
-    MenuItems.pushBack(item4);
-    MenuItems.pushBack(item5);
-    MenuItems.pushBack(item6);
-    auto menu = Menu::createWithArray(MenuItems);
-    menu->setPosition(Vec2(0, 0));
-    this->addChild(menu, 5);
-    auto pause = MenuItemImage::create("pause.png", "pause.png",
-        CC_CALLBACK_1(Connect4::pauseScene, this));
-    pause->setPosition(Vec2(350, 650));
-    Vector<MenuItem*> MenuItem;
-    MenuItem.pushBack(pause);
-    auto menu2 = Menu::createWithArray(MenuItem);
-    menu2->setPosition(Vec2(0, 0));
-    this->addChild(menu2, 6);
-    //auto p1 = Sprite::create("player1" + ("_cs" + std::to_string(color)) + ".png");
+    */
+    //auto p1 = Sprite::create("player1.png");
     //p1->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
     //this->addChild(p1, 1);
     //auto p2 = Sprite::create("player2.png");
@@ -242,7 +214,7 @@ bool Connect4::init()
     auto closeItem = MenuItemImage::create(
                                            "CloseNormal.png",
                                            "CloseSelected.png",
-                                           CC_CALLBACK_1(Connect4::menuCloseCallback, this));
+                                           CC_CALLBACK_1(Pause::menuCloseCallback, this));
 
     if (closeItem == nullptr ||
         closeItem->getContentSize().width <= 0 ||
@@ -271,7 +243,7 @@ bool Connect4::init()
     
 
 
-    // add "Connect4" splash screen"
+    // add "Pause" splash screen"
     auto sprite = Sprite::create("board.png");
     if (sprite == nullptr)
     {
@@ -289,7 +261,7 @@ bool Connect4::init()
             // add the label as a child to this layer
             this->addChild(label, 1);
         }
-        problemLoading("'Connect4.png'");
+        problemLoading("'Pause.png'");
     }
     else
     {
@@ -317,13 +289,12 @@ bool Connect4::init()
 }
 
 
-void Connect4::menuCloseCallback(Ref* pSender)
+void Pause::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->end();
 
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
-
+    
     //EventCustom customEndEvent("game_scene_close_event");
     //_eventDispatcher->dispatchEvent(&customEndEvent);
 
